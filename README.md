@@ -33,7 +33,12 @@ ffmpeg -version
 brew install ffmpeg
 ```
 
-Grant **Accessibility** permission to your terminal app (System Settings > Privacy & Security > Accessibility). This is required for the input controller to send keyboard/mouse events to games.
+On the first run, macOS will prompt you to grant permissions to your terminal app (e.g. Terminal, iTerm, VS Code). Go to **System Settings > Privacy & Security** and enable the following for your terminal:
+
+- **Accessibility** — required for the input controller to send keyboard/mouse events to games
+- **Screen Recording** — required for ffmpeg to capture screen content
+
+You may also see a **Camera** access prompt. This is a macOS quirk: ffmpeg uses the AVFoundation framework to capture the screen (device `1:none` in `capture.py` line 54), and macOS triggers the camera permission dialog for any AVFoundation video access, even though only screen capture is used. It is safe to grant — no camera data is accessed.
 
 ## Setup
 
