@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:ai.google.dev)",
+      "WebFetch(domain:blog.google)",
+      "WebFetch(domain:developers.googleblog.com)",
+      "Bash(git -C \"E:\\\\Projects\\\\player-ai\" log --oneline --all)",
+      "Bash(pip:*)",
+      "Bash(node --version:*)",
+      "Bash(npm:*)",
+      "Bash(ffmpeg:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:googleapis.github.io)",
+      "Bash(npx create-next-app@latest:*)",
+      "Bash(npx next build:*)",
+      "Bash(python -m py_compile:*)",
+      "Bash(python -m venv:*)",
+      "Bash(E:/Projects/player-ai/.venv/Scripts/pip install:*)",
+      "Bash(git update-index:*)",
+      "Bash(if not exist \"E:\\\\Projects\\\\player-ai\\\\temp\" mkdir \"E:\\\\Projects\\\\player-ai\\\\temp\")",
+      "Bash(.venvScriptspip show google-genai)",
+      "Bash(findstr:*)",
+      "Bash(.venvScriptspython -c \"import google.genai; print\\(google.genai.__version__\\)\")",
+      "Bash(E:/Projects/player-ai/.venv/Scripts/python.exe:*)",
+      "Bash(E:/Projects/player-ai/.venv/Scripts/pip.exe install --upgrade google-genai)",
+      "Bash(E:/Projects/player-ai/.venv/Scripts/pip.exe index:*)",
+      "WebFetch(domain:discuss.ai.google.dev)",
+      "WebFetch(domain:medium.com)",
+      "WebFetch(domain:docs.cloud.google.com)"
+    ]
+  }
+}

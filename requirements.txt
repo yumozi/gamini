@@ -1,0 +1,7 @@
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+python-dotenv>=1.0.0
+google-genai>=1.0.0
+pywinctl>=0.4
+pydirectinput-rgx>=2.0.0; sys_platform == "win32"
+pyobjc-framework-Quartz>=10.0; sys_platform == "darwin"
