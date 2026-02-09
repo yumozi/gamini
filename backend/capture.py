@@ -48,7 +48,10 @@ def _build_input_args(
         else:
             args += ["-i", "desktop"]
     elif sys.platform == "darwin":
-        args += ["-f", "avfoundation", "-framerate", str(fps), "-i", "1:none"]
+        # avfoundation only accepts native device framerates (e.g. 30fps),
+        # not arbitrary values like 5fps. Capture at 30fps and let the
+        # output -vf fps filter downsample to the desired rate.
+        args += ["-f", "avfoundation", "-framerate", "30", "-i", "1:none"]
     else:
         args += ["-f", "x11grab", "-framerate", str(fps), "-i", ":0.0"]
     return args
@@ -62,8 +65,13 @@ def _output_args(output_path: str, fragmented: bool = False, fps: int = 15) -> l
                     valid even if ffmpeg is killed mid-write.
         fps: Framerate, used to set keyframe interval for fragmented mode.
     """
+    # On macOS, avfoundation captures at 30fps regardless of desired fps,
+    # so we add an fps filter to downsample to the target rate.
+    vf_filters = f"scale='min({VIDEO_MAX_WIDTH},iw)':-2"
+    if sys.platform == "darwin":
+        vf_filters = f"fps={fps}," + vf_filters
     args = [
-        "-vf", f"scale='min({VIDEO_MAX_WIDTH},iw)':-2",
+        "-vf", vf_filters,
         "-c:v", "libx264",
         "-preset", "ultrafast",
         "-crf", "30",
