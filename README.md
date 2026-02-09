@@ -33,7 +33,7 @@ ffmpeg -version
 brew install ffmpeg
 ```
 
-On the first run, macOS will prompt you to grant permissions to your terminal app or IDE (e.g. Terminal, VS Code, etc). Go to **System Settings > Privacy & Security** and enable the following for your terminal:
+On the first run, macOS will prompt you to grant permissions to your terminal app or IDE (e.g. Terminal, VS Code, etc). Follow the instructions, or go to **System Settings > Privacy & Security** and enable the following for your terminal:
 
 - **Accessibility** — required for the input controller to send keyboard/mouse events to games
 - **Screen Recording** — required for ffmpeg to capture screen content
