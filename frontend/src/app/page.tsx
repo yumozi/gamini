@@ -270,7 +270,7 @@ export default function Home() {
                 </h1>
               </div>
               <p className="text-sm text-zinc-500 ml-[19px]">
-                Visual game agent &middot; Gemini-powered
+                Gemini-powered visual game agent
               </p>
             </div>
             <div className="flex items-center gap-4 text-xs text-zinc-600 font-mono">
