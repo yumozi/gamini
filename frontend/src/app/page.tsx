@@ -266,7 +266,7 @@ export default function Home() {
               <div className="flex items-center gap-3 mb-1">
                 <div className="h-8 w-1 bg-emerald-500 rounded-full" />
                 <h1 className="text-2xl font-bold tracking-tight text-zinc-50">
-                  Player AI
+                  Gamini
                 </h1>
               </div>
               <p className="text-sm text-zinc-500 ml-[19px]">

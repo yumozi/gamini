@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Player AI",
-  description: "Visual game player agent powered by Gemini",
+  title: "Gamini",
+  description: "Visual game-playing agent powered by Gemini",
 };
 
 export default function RootLayout({
