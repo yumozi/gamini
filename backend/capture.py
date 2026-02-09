@@ -18,6 +18,46 @@ logger = logging.getLogger(__name__)
 # Max width ffmpeg scales video to
 VIDEO_MAX_WIDTH = 1280
 
+# Cached macOS screen capture device index (None = not yet discovered)
+_macos_screen_device: Optional[str] = None
+
+
+def _find_macos_screen_device() -> str:
+    """Find the avfoundation device index for screen capture.
+
+    Runs `ffmpeg -f avfoundation -list_devices true -i ""` and looks for
+    "Capture screen" in the output. Caches the result for subsequent calls.
+    Falls back to "1" if detection fails.
+    """
+    global _macos_screen_device
+    if _macos_screen_device is not None:
+        return _macos_screen_device
+
+    try:
+        result = subprocess.run(
+            ["ffmpeg", "-f", "avfoundation", "-list_devices", "true", "-i", ""],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=5,
+        )
+        # ffmpeg prints device list to stderr
+        output = result.stderr.decode(errors="replace")
+        for line in output.splitlines():
+            # Lines look like: [AVFoundation ...] [2] Capture screen 0
+            if "Capture screen" in line:
+                # Extract the device index from brackets: [2]
+                start = line.find("] [") + 3
+                end = line.find("]", start)
+                if start > 2 and end > start:
+                    idx = line[start:end].strip()
+                    logger.info(f"Detected macOS screen capture device: index {idx}")
+                    _macos_screen_device = idx
+                    return idx
+    except Exception as e:
+        logger.warning(f"Failed to detect macOS screen device: {e}")
+
+    logger.warning("Could not detect screen capture device, falling back to index 1")
+    _macos_screen_device = "1"
+    return "1"
+
 
 def _build_input_args(
     fps: int,
@@ -51,7 +91,8 @@ def _build_input_args(
         # avfoundation only accepts native device framerates (e.g. 30fps),
         # not arbitrary values like 5fps. Capture at 30fps and let the
         # output -vf fps filter downsample to the desired rate.
-        args += ["-f", "avfoundation", "-framerate", "30", "-i", "1:none"]
+        screen_idx = _find_macos_screen_device()
+        args += ["-f", "avfoundation", "-framerate", "30", "-i", f"{screen_idx}:none"]
     else:
         args += ["-f", "x11grab", "-framerate", str(fps), "-i", ":0.0"]
     return args
