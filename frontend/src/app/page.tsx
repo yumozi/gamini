@@ -204,17 +204,20 @@ export default function Home() {
       if ("media_resolution" in updates) setMediaResolution(updates.media_resolution as string);
       if ("thinking_level" in updates) setThinkingLevel(updates.thinking_level as string);
 
-      // Auto-switch thinking level if switching to Pro with unsupported level
+      // Auto-switch thinking level if switching to Pro with unsupported level.
+      // Must mutate `updates` synchronously — setState updaters run async
+      // during React's render phase, so mutations inside them won't be
+      // visible when we build `toSend` below.
       if ("model" in updates) {
         const newModel = updates.model as string;
-        if (newModel.includes("pro")) {
-          setThinkingLevel((prev) => {
-            if (prev === "none" || prev === "medium") {
-              updates.thinking_level = "low";
-              return "low";
-            }
-            return prev;
-          });
+        if (newModel.includes("pro") && !("thinking_level" in updates)) {
+          // We can't read current state in an empty-deps callback, so use
+          // functional setState just for the UI, and always send "low" to
+          // the backend as a safe Pro-compatible default.
+          setThinkingLevel((prev) =>
+            prev === "none" || prev === "medium" ? "low" : prev
+          );
+          updates.thinking_level = "low";
         }
       }
 

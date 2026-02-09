@@ -128,13 +128,21 @@ async def analyze_gameplay(
         else types.MediaResolution.MEDIA_RESOLUTION_MEDIUM
     )
 
+    # Map config strings to SDK enum values
+    _thinking_map = {"none": "MINIMAL", "low": "LOW", "medium": "MEDIUM", "high": "HIGH"}
+    thinking_level = _thinking_map.get(config.thinking_level, "LOW")
+
+    # Pro only supports LOW/HIGH
+    if "pro" in config.model and thinking_level in ("MINIMAL", "MEDIUM"):
+        thinking_level = "LOW"
+
     gen_config = types.GenerateContentConfig(
         system_instruction=SYSTEM_PROMPT,
         temperature=config.temperature,
         response_mime_type="application/json",
         response_schema=GameActionResponse,
         automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
-        thinking_config=types.ThinkingConfig(thinking_level=config.thinking_level),
+        thinking_config=types.ThinkingConfig(thinking_level=thinking_level),
         media_resolution=media_res,
     )
 
