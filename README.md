@@ -144,10 +144,11 @@ All settings can be changed from the frontend Settings panel while the agent is 
 | Setting | Default | Description |
 |---------|---------|-------------|
 | Gemini API Key | from `.env` | Can also be set in the frontend |
-| Model | Gemini 2.5 Flash | Also supports 2.5 Pro and 2.0 Flash |
+| Model | Gemini 3 Flash | Also supports Gemini 3 Pro |
 | Capture Duration | 1.5s | How long each screen recording is |
-| Capture FPS | 15 | Frames per second in the recording |
-| Temperature | 0.5 | Gemini sampling temperature |
+| Capture FPS | 5 | Frames per second (1-10, sent to Gemini via video_metadata) |
+| Temperature | 1.0 | Gemini sampling temperature (0-1) |
+| Media Resolution | Low | Low (66 tok/frame) or Default (258 tok/frame) |
 
 ## Project Structure
 
