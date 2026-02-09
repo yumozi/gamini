@@ -243,8 +243,11 @@ class GameLoop:
                     except Exception:
                         pass
 
-                # Push error status (success path already pushed earlier)
+                # Push error status (success path already pushed reasoning earlier,
+                # so clear it to avoid duplicate entries in the frontend)
                 if status.error:
+                    status.reasoning = ""
+                    status.actions = []
                     await self._push_status(status)
 
         except asyncio.CancelledError:
