@@ -33,6 +33,7 @@ class GameLoop:
         self._iteration = 0
         self._state = LoopState.IDLE
         self._history: list[GameActionResponse] = []
+        self._last_fps: float = 0.0
 
     @property
     def is_running(self) -> bool:
@@ -156,6 +157,7 @@ class GameLoop:
                 status = LoopStatus(
                     state=LoopState.RUNNING,
                     iteration=self._iteration,
+                    fps=self._last_fps,
                 )
 
                 try:
@@ -180,11 +182,12 @@ class GameLoop:
                     # 3. Scale coordinates from video → real screen space
                     self._scale_actions(response, screen_info)
 
-                    # 4. Capture response into status NOW, before finish_capture
-                    #    which can fail — we still want reasoning/actions visible.
+                    # 4. Push status immediately so frontend shows reasoning/actions
+                    #    before they execute (not after the whole iteration finishes).
                     status.reasoning = response.reasoning
                     status.actions = response.actions
                     status.video_url = video_url
+                    await self._push_status(status)
 
                     # 5. Execute actions (recording continues, capturing results)
                     if response.actions:
@@ -209,9 +212,9 @@ class GameLoop:
                     # 8. Update history (last 1 response)
                     self._history = [response]
 
-                    # 9. Finalize status
+                    # 9. Compute iterations/sec for the frontend display (sent in next iteration's push)
                     elapsed = time.monotonic() - iter_start
-                    status.fps = 1.0 / elapsed if elapsed > 0 else 0
+                    self._last_fps = 1.0 / elapsed if elapsed > 0 else 0
 
                 except asyncio.CancelledError:
                     if session:
@@ -237,8 +240,9 @@ class GameLoop:
                     except Exception:
                         pass
 
-                # 9. Push status
-                await self._push_status(status)
+                # Push error status (success path already pushed earlier)
+                if status.error:
+                    await self._push_status(status)
 
         except asyncio.CancelledError:
             logger.info("Game loop cancelled")

@@ -27,6 +27,7 @@ interface ActionEntry {
   key?: string;
   x?: number;
   y?: number;
+  bbox?: number[];
   button?: string;
   duration?: number;
   timestamp: number;
@@ -41,6 +42,7 @@ interface LoopStatus {
     key?: string;
     x?: number;
     y?: number;
+    bbox?: number[];
     button?: string;
     duration?: number;
   }>;
@@ -150,6 +152,7 @@ export default function Home() {
             key: a.key ?? undefined,
             x: a.x ?? undefined,
             y: a.y ?? undefined,
+            bbox: a.bbox ?? undefined,
             button: a.button ?? undefined,
             duration: a.duration ?? undefined,
             timestamp: now,

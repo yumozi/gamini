@@ -79,7 +79,12 @@ class MacOSInputBackend(InputBackend):
         self._kCGEventRightMouseUp = kCGEventRightMouseUp
         self._kCGMouseEventClickState = kCGMouseEventClickState
 
-        self._mouse_pos = (0, 0)
+        # Initialize to current mouse position instead of (0, 0) so that
+        # clicks without explicit coordinates don't jump to the top-left corner.
+        from Quartz import CGEventCreate, CGEventGetLocation
+        evt = CGEventCreate(None)
+        loc = CGEventGetLocation(evt)
+        self._mouse_pos = (loc.x, loc.y)
 
     async def execute_action(self, action: GameAction) -> None:
         loop = asyncio.get_event_loop()

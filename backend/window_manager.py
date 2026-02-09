@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import sys
+
 import pywinctl
 
 
@@ -48,12 +50,20 @@ def get_window_geometry(title: str) -> dict | None:
 
 def get_screen_size() -> tuple[int, int]:
     """Get primary screen resolution."""
-    import ctypes
-    import sys
     if sys.platform == "win32":
+        import ctypes
         user32 = ctypes.windll.user32
         user32.SetProcessDPIAware()
         return user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
+    elif sys.platform == "darwin":
+        try:
+            from AppKit import NSScreen
+            frame = NSScreen.mainScreen().frame()
+            # Return point coordinates (not pixels) because macOS mouse
+            # events (CGEventPost) operate in point space, not pixel space.
+            return int(frame.size.width), int(frame.size.height)
+        except Exception:
+            pass
     return 1920, 1080  # fallback
 
 
@@ -69,9 +79,21 @@ def focus_window(title: str) -> bool:
 
     win = windows[0]
     try:
-        if win.isMinimized:
-            win.restore()
-        win.activate()
-        return True
+        if sys.platform == "darwin":
+            # On macOS, pywinctl's activate() can cause windows to exit
+            # maximized/full-window state. Use NSRunningApplication instead
+            # which activates the *app* without manipulating window geometry.
+            from AppKit import NSRunningApplication, NSApplicationActivateIgnoringOtherApps
+            pid = win.getHandle()
+            app = NSRunningApplication.runningApplicationWithProcessIdentifier_(pid)
+            if app:
+                app.activateWithOptions_(NSApplicationActivateIgnoringOtherApps)
+                return True
+            return False
+        else:
+            if win.isMinimized:
+                win.restore()
+            win.activate()
+            return True
     except Exception:
         return False

@@ -131,13 +131,15 @@ def _capture_sync(
     tmp_path = Path(tmp.name)
     tmp.close()
 
+    # avfoundation on macOS is slow to initialize; give extra headroom
+    extra = 20 if sys.platform == "darwin" else 10
+
     try:
         cmd = ["ffmpeg", "-y"] + _build_input_args(fps, target_window, window_rect)
         cmd += ["-t", str(duration)] + _output_args(str(tmp_path))
-
         result = subprocess.run(
             cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-            timeout=duration + 10,
+            timeout=duration + extra,
         )
 
         if result.returncode != 0:
@@ -148,7 +150,7 @@ def _capture_sync(
                 cmd += ["-t", str(duration)] + _output_args(str(tmp_path))
                 result = subprocess.run(
                     cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                    timeout=duration + 10,
+                    timeout=duration + extra,
                 )
                 if result.returncode != 0:
                     err_msg = result.stderr.decode(errors="replace")[-500:]
@@ -161,7 +163,7 @@ def _capture_sync(
             raise RuntimeError(f"ffmpeg captured no frames ({len(data)} bytes, likely empty MP4 container)")
         return data
     except subprocess.TimeoutExpired:
-        raise RuntimeError(f"ffmpeg capture timed out after {duration + 10}s")
+        raise RuntimeError(f"ffmpeg capture timed out after {duration + extra}s")
     finally:
         _safe_unlink(tmp_path)
 
@@ -279,6 +281,11 @@ class CaptureSession:
         Re-muxes the fragmented MP4 into a standard MP4 that Gemini
         definitely accepts.
         """
+        # Ensure trim window is long enough to contain at least a couple of
+        # frames.  With low fps (e.g. 1fps) and a short capture_duration
+        # (e.g. 0.5s), there would be 0 frames in the window → empty output.
+        trim_duration = max(duration, 2.0 / self._fps) if self._fps > 0 else duration
+
         out_tmp = tempfile.NamedTemporaryFile(suffix=".mp4", delete=False)
         out_path = Path(out_tmp.name)
         out_tmp.close()
@@ -287,7 +294,7 @@ class CaptureSession:
             result = subprocess.run(
                 [
                     "ffmpeg", "-y",
-                    "-sseof", f"-{duration}",
+                    "-sseof", f"-{trim_duration}",
                     "-i", str(self._tmp_path),
                     "-c:v", "libx264", "-preset", "ultrafast",
                     "-crf", "30", "-pix_fmt", "yuv420p",
@@ -297,7 +304,7 @@ class CaptureSession:
                 stderr=subprocess.PIPE,
                 timeout=15,
             )
-            if result.returncode == 0 and out_path.stat().st_size > 100:
+            if result.returncode == 0 and out_path.stat().st_size > 2048:
                 return out_path.read_bytes()
             err = result.stderr.decode(errors="replace")[-200:]
             logger.warning(f"Trim failed (code {result.returncode}): {err}")

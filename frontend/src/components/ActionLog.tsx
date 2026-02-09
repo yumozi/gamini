@@ -8,6 +8,7 @@ interface ActionEntry {
   key?: string;
   x?: number;
   y?: number;
+  bbox?: number[];
   button?: string;
   duration?: number;
   timestamp: number;
@@ -31,6 +32,12 @@ export function ActionLog({ entries }: ActionLogProps) {
     if (entry.key) parts.push(`key="${entry.key}"`);
     if (entry.x !== undefined) parts.push(`x=${entry.x}`);
     if (entry.y !== undefined) parts.push(`y=${entry.y}`);
+    if (entry.bbox && entry.bbox.length === 4) {
+      const [yMin, xMin, yMax, xMax] = entry.bbox;
+      const pctX = ((xMin + xMax) / 2 / 10).toFixed(1);
+      const pctY = ((yMin + yMax) / 2 / 10).toFixed(1);
+      parts.push(`(${pctX}% x, ${pctY}% y)`);
+    }
     if (entry.button) parts.push(`btn=${entry.button}`);
     if (entry.duration) parts.push(`${entry.duration}s`);
     return parts.join(" ");

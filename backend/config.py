@@ -25,8 +25,12 @@ def get_config() -> AppConfig:
 
 def update_config(updates: dict) -> AppConfig:
     global _config
+    # Fields that are Optional and can legitimately be set to None
+    _nullable_fields = {"target_window"}
     with _lock:
         data = _config.model_dump()
-        data.update({k: v for k, v in updates.items() if v is not None})
+        for k, v in updates.items():
+            if v is not None or k in _nullable_fields:
+                data[k] = v
         _config = AppConfig(**data)
         return _config.model_copy()
