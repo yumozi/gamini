@@ -94,6 +94,7 @@ You need **two terminals** — one for the backend, one for the frontend.
 **macOS:**
 
 ```bash
+chmod +x start.sh   # first time only
 ./start.sh
 ```
 

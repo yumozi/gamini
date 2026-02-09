@@ -27,6 +27,10 @@ out/
 .DS_Store
 Thumbs.db
 
+# Claude
+CLAUDE.md
+.claude/
+
 # Temp
 *.tmp
 *.mp4
