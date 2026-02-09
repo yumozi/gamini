@@ -134,7 +134,7 @@ async def analyze_gameplay(
         response_mime_type="application/json",
         response_schema=GameActionResponse,
         automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
-        thinking_config=types.ThinkingConfig(thinking_level="low"),
+        thinking_config=types.ThinkingConfig(thinking_level=config.thinking_level),
         media_resolution=media_res,
     )
 
@@ -165,7 +165,7 @@ async def analyze_gameplay(
                     contents=contents,
                     config=gen_config,
                 ),
-                timeout=20,
+                timeout=60,
             )
 
             elapsed = _time.monotonic() - t0
@@ -186,7 +186,7 @@ async def analyze_gameplay(
             return GameActionResponse(reasoning="No response from model", actions=[])
 
         except asyncio.TimeoutError:
-            logger.error(f"Gemini API timed out after 20s (attempt {attempt + 1})")
+            logger.error(f"Gemini API timed out after 60s (attempt {attempt + 1})")
             if attempt >= retry_count:
                 return GameActionResponse(reasoning="API timeout", actions=[])
 

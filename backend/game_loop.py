@@ -136,6 +136,9 @@ class GameLoop:
         try:
             config = get_config()
 
+            # Brief delay so the user can switch to the game window
+            await asyncio.sleep(1.0)
+
             # ── First iteration: simple fixed-duration capture ──
             window_rect = None
             if config.target_window:

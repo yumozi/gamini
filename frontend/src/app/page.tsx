@@ -70,6 +70,7 @@ export default function Home() {
   const [captureFps, setCaptureFps] = useState(5);
   const [temperature, setTemperature] = useState(1.0);
   const [mediaResolution, setMediaResolution] = useState("low");
+  const [thinkingLevel, setThinkingLevel] = useState("low");
   const [error, setError] = useState<string | null>(null);
 
   const fetchWindows = useCallback(async () => {
@@ -92,6 +93,7 @@ export default function Home() {
       if (data.capture_fps) setCaptureFps(data.capture_fps);
       if (data.temperature !== undefined) setTemperature(data.temperature);
       if (data.media_resolution) setMediaResolution(data.media_resolution);
+      if (data.thinking_level) setThinkingLevel(data.thinking_level);
       setGameContext(data.game_context || "");
       setSelectedWindow(data.target_window || null);
     } catch {
@@ -200,6 +202,21 @@ export default function Home() {
       if ("capture_fps" in updates) setCaptureFps(updates.capture_fps as number);
       if ("temperature" in updates) setTemperature(updates.temperature as number);
       if ("media_resolution" in updates) setMediaResolution(updates.media_resolution as string);
+      if ("thinking_level" in updates) setThinkingLevel(updates.thinking_level as string);
+
+      // Auto-switch thinking level if switching to Pro with unsupported level
+      if ("model" in updates) {
+        const newModel = updates.model as string;
+        if (newModel.includes("pro")) {
+          setThinkingLevel((prev) => {
+            if (prev === "none" || prev === "medium") {
+              updates.thinking_level = "low";
+              return "low";
+            }
+            return prev;
+          });
+        }
+      }
 
       // Don't send empty API key to backend (would overwrite .env value)
       const toSend = { ...updates };
@@ -304,6 +321,7 @@ export default function Home() {
                 captureFps={captureFps}
                 temperature={temperature}
                 mediaResolution={mediaResolution}
+                thinkingLevel={thinkingLevel}
                 onUpdate={handleConfigUpdate}
               />
             </div>

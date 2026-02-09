@@ -76,4 +76,5 @@ class AppConfig(BaseModel):
     target_window: Optional[str] = None  # None = full screen
     temperature: float = Field(1.0, ge=0.0, le=1.0)
     media_resolution: str = Field("low", description="Gemini media resolution: 'low' or 'default'")
+    thinking_level: str = Field("low", description="Gemini thinking level: 'none', 'low', 'medium', 'high'")
     action_delay: float = Field(0.02, ge=0.0, le=1.0, description="Min seconds between actions")

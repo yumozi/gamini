@@ -7,8 +7,16 @@ interface SettingsPanelProps {
   captureFps: number;
   temperature: number;
   mediaResolution: string;
+  thinkingLevel: string;
   onUpdate: (updates: Record<string, unknown>) => void;
 }
+
+const THINKING_LEVELS = [
+  { value: "none", label: "Minimal" },
+  { value: "low", label: "Low" },
+  { value: "medium", label: "Medium" },
+  { value: "high", label: "High" },
+];
 
 export function SettingsPanel({
   apiKey,
@@ -17,8 +25,10 @@ export function SettingsPanel({
   captureFps,
   temperature,
   mediaResolution,
+  thinkingLevel,
   onUpdate,
 }: SettingsPanelProps) {
+  const isPro = model.includes("pro");
   return (
     <div className="rounded-xl border border-zinc-800 bg-zinc-900/80 p-5 overflow-hidden">
       <h2 className="text-sm font-semibold uppercase tracking-wider text-zinc-400 mb-4">
@@ -56,6 +66,36 @@ export function SettingsPanel({
               <option value="gemini-3-flash-preview">Gemini 3 Flash</option>
               <option value="gemini-3-pro-preview">Gemini 3 Pro</option>
             </select>
+          </div>
+        </div>
+
+        {/* Thinking Level */}
+        <div>
+          <div className="flex justify-between text-xs mb-1.5">
+            <span className="text-zinc-500">Thinking Level</span>
+          </div>
+          <div className="flex gap-1.5">
+            {THINKING_LEVELS.map(({ value, label }) => {
+              const disabled = isPro && (value === "none" || value === "medium");
+              const selected = thinkingLevel === value;
+              return (
+                <button
+                  key={value}
+                  disabled={disabled}
+                  onClick={() => onUpdate({ thinking_level: value })}
+                  className={`flex-1 rounded-lg border px-2 py-1.5 text-xs font-medium transition-colors ${
+                    disabled
+                      ? "border-zinc-800/50 bg-zinc-900/40 text-zinc-700 cursor-not-allowed"
+                      : selected
+                        ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-400"
+                        : "border-zinc-700/50 bg-zinc-800/60 text-zinc-500 hover:text-zinc-300"
+                  }`}
+                  title={disabled ? "Not available for Pro" : ""}
+                >
+                  {label}
+                </button>
+              );
+            })}
           </div>
         </div>
 
