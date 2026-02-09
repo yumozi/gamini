@@ -1,6 +1,10 @@
-# Player AI
+# Gamini
 
-A visual game player agent that captures screen video, sends it to Gemini for analysis, and executes the returned keyboard/mouse actions in a loop. React/Next.js frontend provides controls, context input, and live status.
+**Pronunciation:** /ˈɡeɪ.mɪ.ni/ (GAY-mih-nee)
+
+A visual game-playing agent that leverages Gemini’s video understanding capabilities to analyze live screen captures and execute the resulting keyboard and mouse actions in a closed loop. A React/Next.js frontend provides controls, contextual input, and live status.
+
+Supports both Windows and macOS, though Windows is recommended for the best experience.
 
 ## Prerequisites
 
@@ -45,7 +49,7 @@ You may also see a **Camera** access prompt. This is a macOS quirk: ffmpeg uses 
 ### 1. Clone and set up the backend
 
 ```bash
-cd player-ai
+cd gamini
 python -m venv .venv
 ```
 
@@ -130,7 +134,7 @@ Open http://localhost:3000 in your browser.
 3. The connection indicator in the Control panel should show green "Connected"
 4. Select a capture target window (or leave as Full Screen)
 5. Write game context in the textarea — describe the game, its controls, and objectives
-6. Click **Start**
+6. Click **Start** (there is a 1-second delay before recording begins so you can switch to the game window)
 7. The agent will capture screen video, analyze it with Gemini, and execute actions in a loop
 8. Click **Stop** to stop the loop
 
@@ -149,17 +153,18 @@ All settings can be changed from the frontend Settings panel while the agent is 
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| Gemini API Key | from `.env` | Can also be set in the frontend |
+| Gemini API Key | from `.env` | Can also be set in the frontend client |
 | Model | Gemini 3 Flash | Also supports Gemini 3 Pro |
 | Capture Duration | 1.5s | How long each screen recording is |
 | Capture FPS | 5 | Frames per second (1-10, sent to Gemini via video_metadata) |
+| Thinking Level | Low | None/Low/Medium/High (Pro only supports Low and High) |
 | Temperature | 1.0 | Gemini sampling temperature (0-1) |
 | Media Resolution | Low | Low (66 tok/frame) or Default (258 tok/frame) |
 
 ## Project Structure
 
 ```
-player-ai/
+gamini/
 ├── backend/
 │   ├── main.py              # FastAPI server, REST + WebSocket
 │   ├── models.py            # Pydantic models (actions, config, status)
