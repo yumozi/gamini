@@ -1,6 +1,6 @@
 # Gamini
 
-**Pronunciation:** /ˈɡeɪ.mɪ.ni/ (GAY-mih-nee)
+**Pronunciation:** /ˈɡeɪ.mɪ.naɪ/ (GAY-mih-nye)
 
 A visual game-playing agent that leverages Gemini’s video understanding capabilities to analyze live screen captures and execute the resulting keyboard and mouse actions in a closed loop. A React/Next.js frontend provides controls, contextual input, and live status.
 
