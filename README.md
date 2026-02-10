@@ -8,6 +8,8 @@ A visual game-playing agent that leverages Gemini’s video understanding capabi
 
 Supports both Windows and macOS, though Windows is recommended for the best experience.
 
+![Gamini playing Baldur's Gate](images/gameplay.png)
+
 ## Prerequisites
 
 ### Both platforms
