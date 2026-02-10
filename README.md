@@ -1,5 +1,7 @@
 # Gamini
 
+![Gamini](images/title.png)
+
 **Pronunciation:** /ˈɡeɪ.mɪ.naɪ/ (GAY-mih-nye)
 
 A visual game-playing agent that leverages Gemini’s video understanding capabilities to analyze live screen captures and execute the resulting keyboard and mouse actions in a closed loop. A React/Next.js frontend provides controls, contextual input, and live status.
@@ -160,6 +162,10 @@ All settings can be changed from the frontend Settings panel while the agent is 
 | Thinking Level | Low | None/Low/Medium/High (Pro only supports Low and High) |
 | Temperature | 1.0 | Gemini sampling temperature (0-1) |
 | Media Resolution | Low | Low (66 tok/frame) or Default (258 tok/frame) |
+
+## Architecture
+
+![Architecture](images/architecture.png)
 
 ## Project Structure
 
